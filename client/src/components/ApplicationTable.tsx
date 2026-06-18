@@ -29,7 +29,6 @@ const getStatusColor = (status: string): string => {
 };
 
 interface ApplicationTableProps {
-// eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: loading-state data fetch
   applications: Application[];
   onDelete: (id: number) => void;
 }
