@@ -1,7 +1,9 @@
 import axios from "axios";
 import type { CreateApplicationInput, UpdateApplicationInput } from "../types/application.types";
 
-const BASE_URL = "http://localhost:5000/api/applications";
+const BASE_URL = import.meta.env.PROD 
+  ? 'https://interninterview.onrender.com' 
+  : 'http://localhost:5000';
 
 export const getAllapplication = async (status?:string, search?:string) => {
     try{

@@ -17,7 +17,7 @@ export default function HomePage() {
     try {
       setLoading(true);
       const data = await getAllapplication();
-      setApplications(data);
+      setApplications(data.data);
       console.log("data:", data);
     } catch (error) {
       console.error("Error fetching applications:", error);
