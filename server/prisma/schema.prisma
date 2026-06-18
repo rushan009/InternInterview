@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum JobType {
+  Internship
+  Full_time
+  Part_time
+}
+
+enum Status {
+  Applied
+  Interviewing
+  Offer
+  Rejected
+}
+
+model applications {
+  id           Int      @id @default(autoincrement())
+  company_name String   @db.VarChar(100)
+  job_title    String   @db.VarChar(100)
+  job_type     JobType
+  status       Status   @default(Applied)
+  applied_date DateTime @db.Date
+  notes        String?
+  created_at   DateTime @default(now()) @db.Timestamp(6)
+  updated_at   DateTime @updatedAt @db.Timestamp(6)
+}
