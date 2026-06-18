@@ -1,6 +1,6 @@
-import { createApplication, deleteApplication, getAllApplication, updateApplication } from "../services/application.service";
+import { createApplication, deleteApplication, getAllApplication, updateApplication } from "../services/application.service.js";
 import {Response, Request} from "express"
-import { ApplicationFilters, CreateApplicationInput, UpdateApplicationInput } from "../types/application.types";
+import { ApplicationFilters, CreateApplicationInput, UpdateApplicationInput } from "../types/application.types.js";
 
 export const createController = async (req:Request, res:Response)=>{
     try {

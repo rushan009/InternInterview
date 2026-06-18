@@ -1,4 +1,4 @@
-import { JobType, Status } from "../../generated/prisma/enums";
+import { JobType, Status } from "@prisma/client";
 
 export interface CreateApplicationInput { 
   company_name:string

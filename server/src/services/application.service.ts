@@ -1,5 +1,5 @@
-import prisma from "../config/prisma.config";
-import { ApplicationFilters, CreateApplicationInput, UpdateApplicationInput } from "../types/application.types";
+import prisma from "../config/prisma.config.js";
+import { ApplicationFilters, CreateApplicationInput, UpdateApplicationInput } from "../types/application.types.js";
 
 export const createApplication = async (data:CreateApplicationInput) =>{
     return await prisma.applications.create({data:{...data, applied_date: new Date(data.applied_date)}});
