@@ -26,23 +26,33 @@ export const deleteApplication = async(id:number)=>{
     });
 }
 
+export const getAllApplication = async (filters: ApplicationFilters) => {
+  const { status, search, page = "1", limit = "3" } = filters;
 
-export const getAllApplication = async (filters:ApplicationFilters) => {
-    const {status, search} = filters
+  const where: any = {};
+  if (status) where.status = status;
+  if (search) where.OR = [
+    { company_name: { contains: search, mode: "insensitive" } },
+    { job_title: { contains: search, mode: "insensitive" } }
+  ];
 
-    const where:any = {};
-    if (status) {
-        where.status=status
-    }
+  const pageNum = Number(page);
+  const limitNum = Number(limit);
+  const skip = (pageNum - 1) * limitNum;
 
-    if (search) {
-        where.OR=[
-            {company_name:{contains:search, mode:"insensitive"}},
-            {job_title:{contains:search, mode:"insensitive"}}
-        ]
-    }
-    return await prisma.applications.findMany({
-        where,
-        orderBy:{created_at:"desc"}
-    })
-}
+  const data = await prisma.applications.findMany({
+    where,
+    orderBy: { created_at: "desc" },
+    skip,
+    take: limitNum
+  });
+
+  const total = await prisma.applications.count({ where });
+
+  return { 
+    data, 
+    total, 
+    page: pageNum, 
+    totalPages: Math.ceil(total / limitNum) 
+  };
+};

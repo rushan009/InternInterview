@@ -23,5 +23,7 @@ export interface UpdateApplicationInput {
 
 export interface ApplicationFilters {
     status?:Status,
-    search?:string
+    search?:string,
+    page?:string,
+    limit?:string
 }
