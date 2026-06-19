@@ -56,3 +56,11 @@ export const getAllApplication = async (filters: ApplicationFilters) => {
     totalPages: Math.ceil(total / limitNum) 
   };
 };
+
+
+
+export const getApplicationById = async (id:number) =>{
+    return await prisma.applications.findUnique({
+        where:{id}
+    });
+}

@@ -1,30 +1,37 @@
 import { useState } from "react";
-import type { CreateApplicationInput } from "../types/application.types";
-import { createApplication } from "../services/api";
+import type { CreateApplicationInput, UpdateApplicationInput, Application, JobType, Status } from "../types/application.types";
+import { createApplication, updateApplication } from "../services/api";
 interface ApplicationFormProps {
   onClose: () => void;
-  onApplicationAdded: () => void; // Add this prop to refresh the application list
+  onApplicationAdded?: () => void; // Add this prop to refresh the application list
+  application?: Application; // Add this prop to pre-fill the form with existing application data
+
 }
 
-export default function ApplicationForm({ onClose, onApplicationAdded }: ApplicationFormProps) {
+export default function ApplicationForm({ onClose, onApplicationAdded, application }: ApplicationFormProps) {
+    const isEditing = !!application; // Check if we are editing an existing application
     const [data, setData] = useState({
-        company_name: "",
-        job_title: "",
-        job_type: "Full_time",
-        status: "Applied",
-        applied_date: "",
-        notes: "",
+        company_name: isEditing ? application.company_name : "",
+        job_title: isEditing ? application.job_title : "",
+        job_type: isEditing ? application.job_type : "Full_time",
+        status: isEditing ? application.status : "Applied",
+        applied_date: isEditing ? new Date(application.applied_date).toISOString().split('T')[0] : "",
+        notes: isEditing ? (application.notes || "") : "",
     })
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
 
   console.log(data);
 
   try {
-    await createApplication(data as CreateApplicationInput);
+    if (isEditing) {
+      await updateApplication(application.id, data as UpdateApplicationInput);
+    } else {
+      await createApplication(data as CreateApplicationInput);
+    }
     onClose();
-    onApplicationAdded();
+    onApplicationAdded?.();
   } catch (err) {
     console.error(err);
   }
@@ -35,7 +42,7 @@ export default function ApplicationForm({ onClose, onApplicationAdded }: Applica
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-900">
-            Add Application
+            {isEditing ? "Edit Application" : "Add Application"}
           </h2>
           <button className="text-gray-400 hover:text-gray-600" onClick={onClose}>
             <svg
@@ -90,7 +97,7 @@ export default function ApplicationForm({ onClose, onApplicationAdded }: Applica
               <select
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 value={data.job_type}
-                onChange={(e) => setData({...data, job_type: e.target.value})}
+                onChange={(e) => setData({...data, job_type: e.target.value as JobType})}
               >
                 <option value="Full_time">Full Time</option>
 <option value="Internship">Internship</option>
@@ -105,7 +112,7 @@ export default function ApplicationForm({ onClose, onApplicationAdded }: Applica
               <select
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 value={data.status}
-                onChange={(e) => setData({...data, status: e.target.value})}
+                onChange={(e) => setData({...data, status: e.target.value as Status})}
               >
                 <option>Applied</option>
                 <option>Interviewing</option>

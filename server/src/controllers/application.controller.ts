@@ -1,4 +1,4 @@
-import { createApplication, deleteApplication, getAllApplication, updateApplication } from "../services/application.service.js";
+import { createApplication, deleteApplication, getAllApplication, getApplicationById, updateApplication } from "../services/application.service.js";
 import {Response, Request} from "express"
 import { ApplicationFilters, CreateApplicationInput, UpdateApplicationInput } from "../types/application.types.js";
 
@@ -69,6 +69,27 @@ export const getAllApplicationController = async (req:Request, res:Response)=>{
 
         const filters= req.query as ApplicationFilters;
         const response = await getAllApplication(filters);
+        res.status(200).json({
+            success:true,
+            message:"Fetched sucessfully",
+            response
+        })
+        
+
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
+
+export const getApplicationByIdController = async (req:Request, res:Response)=>{
+    try {
+
+        const id= parseInt(req.params.id as string);
+        const response = await getApplicationById(id);
         res.status(200).json({
             success:true,
             message:"Fetched sucessfully",

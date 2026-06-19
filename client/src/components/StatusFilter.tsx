@@ -1,4 +1,4 @@
-export default function StatusFilter() {
+export default function StatusFilter({ setstatus, status }: { setstatus: (status: string) => void; status: string }) {
   const filters = ["All", "Applied", "Interviewing", "Offer", "Rejected"];
 
   return (
@@ -7,10 +7,11 @@ export default function StatusFilter() {
         <button
           key={filter}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filter === "All"
+            filter === status
               ? "bg-blue-600 text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
+          onClick={() => setstatus(filter)}
         >
           {filter}
         </button>

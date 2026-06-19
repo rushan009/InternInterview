@@ -6,19 +6,48 @@ import ApplicationForm from "../components/ApplicationForm";
 import type { Application } from "../types/application.types";
 import { getAllapplication, deleteApplication } from "../services/api";
 
+const ITEMS_PER_PAGE = 3;
+
 export default function HomePage() {
-  const [showform, setShowform] = useState(false);
-  const [refresh, setRefresh] = useState(0);
-  const [loading, setLoading] = useState(false);
+    //shows the form when the add application button is clicked
+    const [showform, setShowform] = useState(false);
 
-  const [applications, setApplications] = useState<Application[]>([]);
+    //state variable to trigger a refresh of the application list
+    const [refresh, setRefresh] = useState(0);
 
+    //for loading state when fetching applications
+    const [loading, setLoading] = useState(false);
+
+    //state variables for applications, pagination, search, and filters
+    const [applications, setApplications] = useState<Application[]>([]);
+
+    // State variables for pagination, search, and filters
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All");
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    
+
+    //for debugging purposes, log the current search query and status filter
+    console.log(searchQuery, statusFilter);
+    console.log(applications);
+
+
+  
+// Function to fetch applications based on current filters and pagination
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const data = await getAllapplication();
+      const data = await getAllapplication(
+        statusFilter === "All" ? undefined : statusFilter,
+        searchQuery || undefined,
+        currentPage,
+        ITEMS_PER_PAGE,
+      );
       setApplications(data.data);
-      console.log("data:", data);
+      setTotalCount(data.total);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Error fetching applications:", error);
     } finally {
@@ -26,6 +55,8 @@ export default function HomePage() {
     }
   };
 
+
+  // Function to handle deletion of an application while clicked on delte button in the table. It calls the deleteApplication API and then refreshes the application list.
   const handleDelete = async (id: number) => {
     try {
       console.log("Deleting application with id:", id);
@@ -36,18 +67,28 @@ export default function HomePage() {
     }
   };
 
+
+  //call the fetchApplications function whenever the refresh state, currentPage, searchQuery, or statusFilter changes. This ensures that the application list is always up-to-date with the latest data based on the current filters and pagination.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: loading-state data fetch
     fetchApplications();
-  }, [refresh]);
+  }, [refresh, currentPage, searchQuery, statusFilter]);
 
   const refreshApplications = () => {
     setRefresh((prev) => prev + 1);
   };
 
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [searchQuery, statusFilter]);
+
   const appliedApplication = applications.length;
-  const interviewApplication = applications.filter(app => app.status === "Interviewing").length;
-  const offerApplication = applications.filter(app => app.status === "Offer").length;
+  const interviewApplication = applications.filter(
+    (app) => app.status === "Interviewing",
+  ).length;
+  const offerApplication = applications.filter(
+    (app) => app.status === "Offer",
+  ).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,7 +98,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-blue-600">Career Hub</h1>
             <div className="flex items-center gap-4">
-              <SearchBar />
+              <SearchBar onSearch={setSearchQuery} />
               <button
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setShowform(true)}
@@ -127,7 +168,7 @@ export default function HomePage() {
             <p className="text-sm text-gray-600 mb-4">
               Manage and track your career opportunities in real-time
             </p>
-            <StatusFilter />
+            <StatusFilter setstatus={setStatusFilter} status={statusFilter} />
           </div>
 
           {showform && (
@@ -138,7 +179,10 @@ export default function HomePage() {
               ></div>
 
               <div className="fixed inset-0 flex items-center justify-center z-50">
-                <ApplicationForm onClose={() => setShowform(false)} onApplicationAdded={refreshApplications} />
+                <ApplicationForm
+                  onClose={() => setShowform(false)}
+                  onApplicationAdded={refreshApplications}
+                />
               </div>
             </>
           )}
@@ -169,31 +213,52 @@ export default function HomePage() {
           ) : applications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 gap-2">
               <p className="text-sm text-gray-500">No applications yet.</p>
-              <p className="text-sm text-gray-400">Click "Add Application" to get started.</p>
+              <p className="text-sm text-gray-400">
+                Click "Add Application" to get started.
+              </p>
             </div>
           ) : (
             <>
-              <ApplicationTable applications={applications} onDelete={handleDelete} />
+              <ApplicationTable
+                applications={applications}
+                onDelete={handleDelete}
+                onApplicationAdded={refreshApplications}
+                setStatusFilter={setStatusFilter}
+              />
 
               {/* Pagination */}
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
                 <p className="text-sm text-gray-600">
-                  Showing 1 to 6 of 24 applications
+                  Showing 1 to 3 of {totalCount} applications
                 </p>
                 <div className="flex gap-1">
-                  <button className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    className="px-2 py-1 rounded disabled:opacity-50"
+                  >
                     ←
                   </button>
-                  <button className="px-3 py-1 bg-blue-600 text-white rounded">
-                    1
-                  </button>
-                  <button className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded">
-                    2
-                  </button>
-                  <button className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded">
-                    3
-                  </button>
-                  <button className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded">
+
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === i + 1
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    className="px-2 py-1 rounded disabled:opacity-50"
+                  >
                     →
                   </button>
                 </div>

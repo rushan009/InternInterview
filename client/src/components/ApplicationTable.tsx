@@ -1,3 +1,6 @@
+import { useState } from "react";
+import ApplicationForm from "./ApplicationForm";
+import type { Application } from "../types/application.types";
 
 
 const getAvatarColor = (letter: string): string => {
@@ -31,16 +34,52 @@ const getStatusColor = (status: string): string => {
 interface ApplicationTableProps {
   applications: Application[];
   onDelete: (id: number) => void;
+  setStatusFilter: (status: string) => void;
+  onApplicationAdded: () => void; // Add this prop to refresh the application list
 }
 
 
 
 
-export default function ApplicationTable( { applications, onDelete }: ApplicationTableProps) {
-
+export default function ApplicationTable( { applications, onDelete, onApplicationAdded }: ApplicationTableProps) {
+    const [showForm, setShowForm] = useState(false);
+    const [editingApplicationId, setEditingApplicationId] = useState<Application | null>(null);
+    const handleUpdate = (id: number) => {
     
+      // Set the application to be edited
+      const app = applications.find(application => application.id === id);
+      if (app) {
+        setEditingApplicationId(app);
+        setShowForm(true);
+      } 
+        
+
+      // For now, just log the ID of the application to be updated. In a real implementation, this would likely open a modal or navigate to an edit page.
+      console.log("Update application with id:", id);
+      setShowForm(true);
+    }
 
   return (
+
+    <>
+
+       {showForm && (
+                <>
+                  <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+                    onClick={() => setShowForm(false)}
+                  ></div>
+    
+                  <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <ApplicationForm
+                      onClose={() => setShowForm(false)}
+                      onApplicationAdded={onApplicationAdded}
+                    application={editingApplicationId || undefined}
+
+                    />
+                  </div>
+                </>
+              )}
       <div className="overflow-x-auto bg-white rounded-lg shadow">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -99,7 +138,7 @@ export default function ApplicationTable( { applications, onDelete }: Applicatio
               <td className="px-6 py-4 text-sm text-gray-600">{app.notes}</td>
               <td className="px-6 py-4 text-sm">
                 <div className="flex gap-2">
-                  <button className="p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded">
+                  <button className="p-1 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded" onClick={() => handleUpdate(app.id)}>
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -126,6 +165,7 @@ export default function ApplicationTable( { applications, onDelete }: Applicatio
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3H4v2h16V7h-3z"
+                        
                       />
                     </svg>
                   </button>
@@ -136,6 +176,7 @@ export default function ApplicationTable( { applications, onDelete }: Applicatio
         </tbody>
       </table>
       </div>
+    </>
     );
   }
 

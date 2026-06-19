@@ -5,14 +5,14 @@ const BASE_URL = import.meta.env.PROD
   ? 'https://interninterview.onrender.com/api/applications' 
   : 'http://localhost:5000/api/applications';
 
-export const getAllapplication = async (status?:string, search?:string) => {
+export const getAllapplication = async (status?:string, search?:string, page:number=1, limit:number=3) => {
     try{
         const response = await axios.get(BASE_URL, {
             params:{
                 status,
                 search,
-                page:1,
-                limit:3
+                page,
+                limit
             }
         })
 
@@ -53,3 +53,14 @@ export const deleteApplication = async (id: number) => {
         throw error;
     }
 }
+
+
+export const getApplicationById = async (id: number) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/${id}`);
+        return response.data.response;
+    } catch (error) {
+        console.error("Error fetching application by ID:", error);
+        throw error;
+    }
+};
