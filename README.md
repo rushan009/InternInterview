@@ -254,6 +254,9 @@ GET /applications?status=Applied&search=google&page=1&limit=3
 
 ---
 
+
+
+
 ## 📄 License
 
 This project was built as part of a Full Stack Internship assignment.
