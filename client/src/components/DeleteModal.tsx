@@ -1,6 +1,14 @@
-export default function DeleteModal() {
+interface DeleteModalProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export default function DeleteModal({ isOpen, onConfirm, onCancel }: DeleteModalProps) {
+  if (!isOpen) return null;
+  
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
         <div className="flex items-start gap-4">
           <div className="shrink-0">
@@ -30,10 +38,16 @@ export default function DeleteModal() {
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={onCancel}
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+          >
             Cancel
           </button>
-          <button className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+          <button 
+            onClick={onConfirm}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+          >
             Confirm Delete
           </button>
         </div>

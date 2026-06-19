@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ApplicationForm from "./ApplicationForm";
+import DeleteModal from "./DeleteModal";
 import type { Application } from "../types/application.types";
 
 
@@ -44,25 +45,40 @@ interface ApplicationTableProps {
 export default function ApplicationTable( { applications, onDelete, onApplicationAdded }: ApplicationTableProps) {
     const [showForm, setShowForm] = useState(false);
     const [editingApplicationId, setEditingApplicationId] = useState<Application | null>(null);
-    const handleUpdate = (id: number) => {
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [applicationToDelete, setApplicationToDelete] = useState<number | null>(null);
     
-      // Set the application to be edited
+    const handleUpdate = (id: number) => {
       const app = applications.find(application => application.id === id);
       if (app) {
         setEditingApplicationId(app);
         setShowForm(true);
       } 
-        
-
-      // For now, just log the ID of the application to be updated. In a real implementation, this would likely open a modal or navigate to an edit page.
       console.log("Update application with id:", id);
       setShowForm(true);
+    }
+    
+    const handleDeleteClick = (id: number) => {
+      setApplicationToDelete(id);
+      setShowDeleteModal(true);
+    }
+    
+    const handleConfirmDelete = () => {
+      if (applicationToDelete) {
+        onDelete(applicationToDelete);
+        setShowDeleteModal(false);
+        setApplicationToDelete(null);
+      }
+    }
+    
+    const handleCancelDelete = () => {
+      setShowDeleteModal(false);
+      setApplicationToDelete(null);
     }
 
   return (
 
     <>
-
        {showForm && (
                 <>
                   <div
@@ -74,12 +90,18 @@ export default function ApplicationTable( { applications, onDelete, onApplicatio
                     <ApplicationForm
                       onClose={() => setShowForm(false)}
                       onApplicationAdded={onApplicationAdded}
-                    application={editingApplicationId || undefined}
-
+                      application={editingApplicationId || undefined}
                     />
                   </div>
                 </>
               )}
+              
+      <DeleteModal 
+        isOpen={showDeleteModal}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+      
       <div className="overflow-x-auto bg-white rounded-lg shadow">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -153,7 +175,7 @@ export default function ApplicationTable( { applications, onDelete, onApplicatio
                       />
                     </svg>
                   </button>
-                  <button className="p-1 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded" onClick={() => onDelete(app.id)}>
+                  <button className="p-1 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded" onClick={() => handleDeleteClick(app.id)}>
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -165,7 +187,6 @@ export default function ApplicationTable( { applications, onDelete, onApplicatio
                         strokeLinejoin="round"
                         strokeWidth={2}
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3H4v2h16V7h-3z"
-                        
                       />
                     </svg>
                   </button>

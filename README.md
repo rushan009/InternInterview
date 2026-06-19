@@ -4,26 +4,26 @@ A full stack web application to track job applications through different hiring 
 
 ---
 
-## 📸 Demo
+## Demo
 ![Search function screenshot](image-1.png)
 ![One page shows three of the applications](image-2.png)
 ![Form to create the application](image-3.png)
 
 
-## 🚀 Live Demo
+## Live Demo
 Full working appllication:-
 https://intern-interview-delta.vercel.app/
 > 
 
 ---
 
-## 📋 Project Overview
+## Project Overview
 
 Career Hub lets you manage your job search in one place. You can add applications, track their status across hiring stages, search by company or job title, filter by status, and delete entries — all through a clean, responsive UI backed by a REST API.
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer      | Technology                          |
 |------------|--------------------------------------|
@@ -35,7 +35,7 @@ Career Hub lets you manage your job search in one place. You can add application
 
 ---
 
-## ✅ Features
+## Features
 
 - **Application List** — view all applications with company name, job title, type, status, applied date, and notes
 - **Add Application** — create a new application via a modal form with validation
@@ -48,7 +48,7 @@ Career Hub lets you manage your job search in one place. You can add application
 
 ---
 
-## 📦 Prerequisites
+## Prerequisites
 
 - Node.js v18+
 - npm v9+
@@ -56,7 +56,7 @@ Career Hub lets you manage your job search in one place. You can add application
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Intern/
@@ -77,7 +77,7 @@ Intern/
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 ### Server — `server/.env`
 
@@ -97,7 +97,7 @@ VITE_API_URL=http://localhost:5000
 
 ---
 
-## 🔧 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the repository
 
@@ -157,7 +157,7 @@ npm run dev
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 ```prisma
 model applications {
